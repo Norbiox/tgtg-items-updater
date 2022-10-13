@@ -53,6 +53,7 @@ class TgtgSettings(Settings):
 if __name__ == "__main__":
     # setup Kafka connectors
     kafka_settings = KafkaSettings()
+    logger.info("Setting up kafka connection...")
     kafka_consumer = KafkaConsumer(
         kafka_settings.trigger_topic,
         bootstrap_servers=kafka_settings.bootstrap_servers,
@@ -60,12 +61,15 @@ if __name__ == "__main__":
     kafka_producer = KafkaProducer(bootstrap_servers=kafka_settings.bootstrap_servers)
 
     # setup TooGoodToGo client
+    logger.info("Setting up TGTG client...")
     tgtg_settings = TgtgSettings()
 
+    logger.info("Waiting for ticks...")
     for msg in kafka_consumer:
+        logger.debug("Ticked!")
 
         # fetch items from TooGoodToGo
-        logger.debug("Fetching items from TGTG...")
+        logger.info("Fetching items from TGTG...")
         try:
             items = TgtgClient(**tgtg_settings.credentials).get_items(**tgtg_settings.query_params)
             # optionally filter out not available items
@@ -76,7 +80,7 @@ if __name__ == "__main__":
             continue
 
         # send items to Kafka
-        logger.debug("Sending fetched items to kafka...")
+        logger.info("Sending fetched items to kafka...")
         future = kafka_producer.send(
             kafka_settings.output_topic,
             json.dumps(items, indent=4).encode("utf-8"),
@@ -86,4 +90,4 @@ if __name__ == "__main__":
         except KafkaError:
             logger.exception(record_metadata)
         else:
-            logger.debug("Items has been sent")
+            logger.info("Items has been sent")
