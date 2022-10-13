@@ -9,6 +9,8 @@ from tgtg import TgtgAPIError, TgtgClient
 
 
 class Settings(BaseSettings):
+    log_file: str = Field("tgtg_items_updater.log", env="LOG_FILE")
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
@@ -51,6 +53,9 @@ class TgtgSettings(Settings):
 
 
 if __name__ == "__main__":
+    settings = Settings()
+    logger.add(settings.log_file, rotation="00:00")
+
     # setup Kafka connectors
     kafka_settings = KafkaSettings()
     logger.info("Setting up kafka connection...")
