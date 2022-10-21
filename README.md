@@ -44,7 +44,6 @@ KAFKA_TIMEOUT=10
 
 TGTG_CREDENTIALS_FILE="credentials.json"
 TGTG_QUERY_PARAMS_FILE="query_params.json"
-TGTG_SKIP_NOT_AVAILABLE_ITEMS=1
 ```
 
 Run `main.py` file.
@@ -64,6 +63,5 @@ docker run \
     -e KAFKA_TIMEOUT=10 \
     -e TGTG_CREDENTIALS_FILE="credentials.json" \
     -e TGTG_QUERY_PARAMS_FILE="query_params.json" \
-    -e TGTG_SKIP_NOT_AVAILABLE_ITEMS=1 \
     norbiox/tgtg-items-updater
 ```

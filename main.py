@@ -39,7 +39,6 @@ class TgtgCredentials(BaseSettings):
 class TgtgSettings(Settings):
     credentials_file: FilePath = Field("credentials.json", env="TGTG_CREDENTIALS_FILE")
     query_params_file: FilePath = Field("query_params.json", env="TGTG_QUERY_PARAMS_FILE")
-    skip_not_available_items: bool = Field(True, env="TGTG_SKIP_NOT_AVAILABLE_ITEMS")
 
     @property
     def credentials(self) -> TgtgCredentials:
@@ -77,9 +76,6 @@ if __name__ == "__main__":
         logger.info("Fetching items from TGTG...")
         try:
             items = TgtgClient(**tgtg_settings.credentials).get_items(**tgtg_settings.query_params)
-            # optionally filter out not available items
-            if tgtg_settings.skip_not_available_items:
-                items = [item for item in items if item["items_available"] > 0]
         except TgtgAPIError | KeyError:
             logger.exception(record_metadata)
             continue
