@@ -7,7 +7,7 @@ Fetches items from TooGoodToGo on kafka message and put them on other kafka topi
 3. items are pushed to kafka topic `KAFKA_OUTPUT_TOPIC`
 
 ## Run
-In each case you need first to create 2 files: `credentials.json` containing TGTG login credentials, and `query_params.json` with TGTG querying options.
+In each case you need first to create 2 files: `credentials.json` containing TGTG login credentials, and `query_params.json` with TGTG querying options. Those files can be updated on-fly later - service will apply changes.
 
 ### `credentials.json`
 The easiest way to obtain file with credentials is to log in using TGTG client in python using below script.
