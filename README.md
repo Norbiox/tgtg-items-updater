@@ -4,7 +4,7 @@ Fetches items from TooGoodToGo on kafka message and put them on other kafka topi
 ## How it works
 1. message appears on kafka topic `KAFKA_TRIGGER_TOPIC`
 2. TooGoodToGo items are fetched using tgtg library
-3. items are pushed to kafka topic `KAFKA_OUTPUT_TOPIC`
+3. list of items along with query parameters and timestamp are pushed to kafka topic `KAFKA_OUTPUT_TOPIC`
 
 ## Run
 In each case you need first to create 2 files: `credentials.json` containing TGTG login credentials, and `query_params.json` with TGTG querying options. Those files can be updated on-fly later - service will apply changes.

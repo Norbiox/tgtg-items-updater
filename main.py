@@ -1,10 +1,11 @@
 #!/usr/env/bin python
 import json
+import time
 
 from kafka import KafkaConsumer, KafkaProducer
 from kafka.errors import KafkaError
 from loguru import logger
-from pydantic import BaseSettings, Field, FilePath
+from pydantic import BaseModel, BaseSettings, Field, FilePath
 from tgtg import TgtgAPIError, TgtgClient
 
 
@@ -34,6 +35,15 @@ class TgtgCredentials(BaseSettings):
     access_token: str
     refresh_token: str
     user_id: str
+
+
+class OutputMessage(BaseModel):
+    query_params: TgtgQueryParams
+    checked_at: float  # timestamp
+    items: list
+
+    def serialize(self):
+        return self.json(indent=4).encode("utf-8")
 
 
 class TgtgSettings(Settings):
@@ -75,6 +85,7 @@ if __name__ == "__main__":
         # fetch items from TooGoodToGo
         logger.info("Fetching items from TGTG...")
         try:
+            checked_at = time.time()
             items = TgtgClient(**tgtg_settings.credentials).get_items(**tgtg_settings.query_params)
         except TgtgAPIError | KeyError:
             logger.exception(record_metadata)
@@ -82,10 +93,11 @@ if __name__ == "__main__":
 
         # send items to Kafka
         logger.info("Sending fetched items to kafka...")
-        future = kafka_producer.send(
-            kafka_settings.output_topic,
-            json.dumps(items, indent=4).encode("utf-8"),
+        message = OutputMessage(
+            items=items, checked_at=checked_at, query_params=tgtg_settings.query_params
         )
+        future = kafka_producer.send(kafka_settings.output_topic, message.serialize())
+
         try:
             record_metadata = future.get(timeout=kafka_settings.timeout)
         except KafkaError:
