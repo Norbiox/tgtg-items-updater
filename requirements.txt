@@ -1,4 +1,4 @@
-kafka-python==2.0.2
+kafkaesk==0.7.5
 loguru==0.6.0
 pydantic==1.10.2
 python-dotenv==0.21.0
